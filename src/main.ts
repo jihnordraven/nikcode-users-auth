@@ -10,6 +10,7 @@ import * as Sentry from '@sentry/node'
 import { ProfilingIntegration } from '@sentry/profiling-node'
 import { SentryFilter, ValidatePipeOptions } from './errors-handlers'
 import * as dotenv from 'dotenv'
+import { SwaggerConfig } from './utils/swagger'
 
 dotenv.config()
 
@@ -34,6 +35,8 @@ const bootstrap = async (): Promise<void> => {
 	const PORT: number = config.getOrThrow<number>('PORT')
 	const HOST: string = config.getOrThrow<string>('HOST')
 	const MODE: string = config.getOrThrow<string>('MODE')
+
+	if (MODE !== 'prod') SwaggerConfig(app)
 
 	Sentry.init({
 		dsn: config.getOrThrow('SENTRY_DSN'),

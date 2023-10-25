@@ -20,7 +20,10 @@ import { REFRESH_TOKEN } from '../../utils/constants'
 import { ConfigService } from '@nestjs/config'
 import { JwtRefreshGuard } from '../../guards-handlers/guards/jwt-refresh.guard'
 import { JwtRefreshPayload } from 'src/guards-handlers/strategies/jwt-refresh.strategy'
+import { ApiTags } from '@nestjs/swagger'
+import { SWAGGER_AUTH } from 'src/utils/swagger'
 
+@ApiTags('Auth endpoints')
 @Controller('auth')
 export class AuthController {
 	constructor(
@@ -28,12 +31,14 @@ export class AuthController {
 		private readonly config: ConfigService
 	) {}
 
+	@SWAGGER_AUTH.SwaggerToRegister()
 	@Post('register')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	public async register(@Body() dto: RegisterDto): Promise<void> {
 		await this.commandBus.execute(new AC.RegisterCommand(dto))
 	}
 
+	@SWAGGER_AUTH.SwaggerToLogin()
 	@Post('login')
 	@HttpCode(HttpStatus.OK)
 	@UseGuards(LocalGuard)
@@ -49,6 +54,7 @@ export class AuthController {
 		this.setTokensToResponse(tokens, res)
 	}
 
+	@SWAGGER_AUTH.SwaggerToRefresh()
 	@Post('refresh')
 	@UseGuards(JwtRefreshGuard)
 	public async refresh(
@@ -70,6 +76,7 @@ export class AuthController {
 		this.setTokensToResponse(tokens, res)
 	}
 
+	@SWAGGER_AUTH.SwaggerToLogout()
 	@Post('logout')
 	@UseGuards(JwtRefreshGuard)
 	public async logout(@Req() req: Request, @Res() res: Response): Promise<void> {
