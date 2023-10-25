@@ -6,6 +6,7 @@ import { UsersModule } from './modules/users/users.module'
 import { PrismaModule } from '../prisma/prisma.module'
 import { CacheModule } from '@nestjs/cache-manager'
 import { redisStore } from 'cache-manager-redis-yet'
+import { STRATEGIES } from './guards-handlers/strategies'
 
 @Module({
 	imports: [
@@ -27,6 +28,7 @@ import { redisStore } from 'cache-manager-redis-yet'
 		AuthModule,
 		SessionsModule,
 		UsersModule
-	]
+	],
+	providers: [...STRATEGIES]
 })
 export class AppModule {}

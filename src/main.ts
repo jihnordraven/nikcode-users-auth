@@ -9,6 +9,9 @@ import * as cookieParser from 'cookie-parser'
 import * as Sentry from '@sentry/node'
 import { ProfilingIntegration } from '@sentry/profiling-node'
 import { SentryFilter, ValidatePipeOptions } from './errors-handlers'
+import * as dotenv from 'dotenv'
+
+dotenv.config()
 
 type NestApp = NestExpressApplication
 
