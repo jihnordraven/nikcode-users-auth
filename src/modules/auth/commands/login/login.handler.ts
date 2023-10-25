@@ -21,7 +21,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
 			{ userId },
 			{
 				secret: JWT_CONFIG.JWT_ACCESS_SECRET,
-				expiresIn: JWT_CONFIG.JWT_ACCESS_EXPIRES
+				expiresIn: Number(JWT_CONFIG.JWT_ACCESS_EXPIRES)
 			}
 		)
 
@@ -29,7 +29,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
 			{ userId, sessionId },
 			{
 				secret: JWT_CONFIG.JWT_REFRESH_SECRET,
-				expiresIn: JWT_CONFIG.JWT_REFRESH_EXPIRES
+				expiresIn: Number(JWT_CONFIG.JWT_REFRESH_EXPIRES)
 			}
 		)
 
