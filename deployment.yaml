@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nikcode-users-auth-deployment
+  lables:
+    app: nikcode-users-auth-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nikcode-users-auth
+  template:
+    metadata:
+      labels:
+        app: nikcode-users-auth
+    spec:
+      containers:
+        - name: nikcode-users-auth-container
+          image: jihnordraven/nikcode-users-auth:latest
