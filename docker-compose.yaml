@@ -1,0 +1,86 @@
+version: '3'
+
+services:
+    microservice-nikcode-users-auth:
+        image: jihnordraven/nikcode-users-auth:latest
+        container_name: nikcode-users-auth-contianer
+        ports:
+            - 4200:4200
+        environment:
+            - DATABASE_URL=postgresql://admin:admin@postgres:5432
+            - RMQ_HOST=amqp://admin:admin@rabbitmq:5672
+            - REDIS_PASS=admin
+            - REDIS_DB=0
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - PORT=4200
+            - HOST=http://localhost:4200
+            - MODE=dev
+            - JWT_ACCESS_SECRET=access-secret-123
+            - JWT_ACCESS_EXPIRES=6000
+            - JWT_REFRESH_SECRET=refresh-secret-123
+            - JWT_REFRESH_EXPIRES=6000
+            - SENTRY_DSN=https://21f1dfd07dd96a22bfbbb67df7da550e@o4506060124323840.ingest.sentry.io/4506098998509568
+        depends_on:
+            - postgres
+            - rabbitmq
+            - redis
+
+    microservice-nikcode-payments:
+        image: jihnordraven/nikcode-payments:latest
+        container_name: nikcode-payments-container
+        ports:
+            - 4300:4300
+        environment:
+            - DATABASE_URL=postgresql://admin:admin@postgres:5432
+            - REDIS_HOST=redis
+            - RMQ_HOST=amqp://admin:admin@rabbitmq:5672
+            - REDIS_PASS=admin
+        depends_on:
+            - postgres
+            - rabbitmq
+            - redis
+
+    microservice-nikcode-mailer:
+        image: jihnordraven/nikcode-mailer:latest
+        container_name: nikcode-mailer-container
+        environment:
+            - RMQ_HOST=amqp://admin:admin@rabbitmq:5672
+        depends_on:
+            - rabbitmq
+
+    postgres:
+        image: postgres:latest
+        container_name: postgres-container
+        ports:
+            - 5432:5432
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+        environment:
+            POSTGRES_USER: admin
+            POSTGRES_PASSWORD: admin
+
+    redis:
+        image: redis:latest
+        container_name: redis-container
+        ports:
+            - 6379:6379
+        volumes:
+            - redis-data:/data
+
+    rabbitmq:
+        image: rabbitmq:management
+        container_name: rabbitmq-container
+        ports:
+            - 5672:5672
+            - 15672:15672
+        environment:
+            RABBITMQ_DEFAULT_USER: admin
+            RABBITMQ_DEFAULT_PASS: admin
+        volumes:
+            - rabbitmq-data:/var/lib/rabbitmq
+
+volumes:
+    postgres-data:
+    redis-data:
+    rabbitmq-data:
