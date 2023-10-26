@@ -7,8 +7,9 @@ services:
         ports:
             - 4200:4200
         environment:
-            - DATABASE_URL=postgresql://admin:admin@postgres:5432
+            - DATABASE_URL=postgresql://admin:admin@postgres:5432/users_auth
             - RMQ_HOST=amqp://admin:admin@rabbitmq:5672
+            - RMQ_PAYMENTS_QUEUE=payments
             - REDIS_PASS=admin
             - REDIS_DB=0
             - REDIS_HOST=redis
@@ -32,14 +33,27 @@ services:
         ports:
             - 4300:4300
         environment:
-            - DATABASE_URL=postgresql://admin:admin@postgres:5432
+            - DATABASE_URL=postgresql://admin:admin@postgres:5432/payments
             - REDIS_HOST=redis
             - RMQ_HOST=amqp://admin:admin@rabbitmq:5672
+            - RMQ_PAYMENTS_QUEUE=payments
             - REDIS_PASS=admin
         depends_on:
             - postgres
             - rabbitmq
             - redis
+
+    microservice-nikcode-payments-listener:
+        image: jihnordraven/nikcode-payments-listener:latest
+        container_name: nikcode-payments-listener-container
+        environment:
+            - RMQ_HOST=amqp://admin:admin@rabbitmq:5672
+            - RMQ_PAYMENTS_QUEUE=payments
+            - DATABASE_URL=postgresql://admin:admin@postgres:5432/payments
+            - REDIS_HOST=redis
+            - REDIS_PASS=admin
+        depends_on:
+            - rabbitmq
 
     microservice-nikcode-mailer:
         image: jihnordraven/nikcode-mailer:latest
