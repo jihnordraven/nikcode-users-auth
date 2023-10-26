@@ -34,6 +34,17 @@ $ docker-compose up
 $ docker-compose down
 ```
 
+```bash
+# check containers:
+$ docker ps
+
+$ docker logs <container-name>
+```
+
+RabbitMQ visual interface: http://localhost:15672 ( admin:admin )
+
+PostgreSQL connect: psql postgresql://admin:admin@localhost:5432
+
 ## Note
 
 Copy and paste environments from .local.env to .env
@@ -41,6 +52,7 @@ Copy and paste environments from .local.env to .env
 ## Installation
 
 ```bash
+# sync db with schema
 $ yarn db:push
 
 $ yarn install
