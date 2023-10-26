@@ -24,6 +24,17 @@
 
 NikCode test-task | users-auth microservice
 
+## Start the whole app
+
+Up postgres | rabbitmq | redis | users-auth | payments | mailer containers by command:
+
+```bash
+$ docker-compose up
+
+# shutdown containers:
+$ docker-compose down
+```
+
 ## Installation
 
 ```bash
