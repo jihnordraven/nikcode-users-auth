@@ -2,12 +2,27 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
 import { RegisterCommand } from './register.command'
 import { UsersRepo } from '../../../../modules/users/repositories/users.repo'
 import { User } from '@prisma/client'
-import { ConflictException, HttpStatus } from '@nestjs/common'
+import {
+	ConflictException,
+	HttpStatus,
+	Inject,
+	InternalServerErrorException
+} from '@nestjs/common'
 import { hash } from 'bcrypt'
+import {
+	MAILER_SERVICE,
+	PAYMENTS_SERVICE
+} from '../../../../utils/constants/services.constants'
+import { ClientProxy } from '@nestjs/microservices'
+import { Observable, firstValueFrom } from 'rxjs'
 
 @CommandHandler(RegisterCommand)
 export class RegisterHandler implements ICommandHandler<RegisterCommand> {
-	constructor(protected readonly usersRepo: UsersRepo) {}
+	constructor(
+		@Inject(PAYMENTS_SERVICE) private readonly paymentsClient: ClientProxy,
+		@Inject(MAILER_SERVICE) private readonly mailerClient: ClientProxy,
+		protected readonly usersRepo: UsersRepo
+	) {}
 
 	public async execute({ input }: RegisterCommand): Promise<any> {
 		const { email, login, passw } = input
@@ -31,7 +46,19 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand> {
 			})
 
 		const hashPassw: string = await hash(passw, 8)
-
 		const user: User = await this.usersRepo.create({ email, login, hashPassw })
+
+		const res: Observable<{ ok: boolean }> = this.paymentsClient.send(
+			'user-created',
+			user.id
+		)
+		const result = await firstValueFrom(res)
+
+		if (!result.ok) {
+			await this.usersRepo.delete(user.id)
+			throw new InternalServerErrorException('Unable to create a user')
+		}
+
+		this.mailerClient.emit('user-created', email)
 	}
 }

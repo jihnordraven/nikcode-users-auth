@@ -1,4 +1,10 @@
-import { Inject, Injectable, InternalServerErrorException, Logger } from '@nestjs/common'
+import {
+	Inject,
+	Injectable,
+	InternalServerErrorException,
+	Logger,
+	NotFoundException
+} from '@nestjs/common'
 import { PrismaService } from '../../../../prisma/prisma.service'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Cache } from 'cache-manager'
@@ -80,6 +86,14 @@ export class UsersRepo {
 			return user
 		}
 		return user
+	}
+
+	public async delete(id: string): Promise<void> {
+		const user: User | null = await this.findById(id)
+		if (!user) throw new NotFoundException('User not found')
+		await this.cleanCache(user)
+
+		await this.prisma.user.delete({ where: { id } })
 	}
 
 	// Helpers

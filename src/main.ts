@@ -19,7 +19,7 @@ type NestApp = NestExpressApplication
 const logger: Logger = new Logger('bootstrap')
 
 const bootstrap = async (): Promise<void> => {
-	const app: NestApp = await NestFactory.create<NestApp>(AppModule, winstonLogger)
+	const app: NestApp = await NestFactory.create<NestApp>(AppModule)
 
 	app.setGlobalPrefix('api/v1', { exclude: [{ path: '/', method: RequestMethod.GET }] })
 	app.enableCors({

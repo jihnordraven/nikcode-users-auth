@@ -1,8 +1,10 @@
 import {
 	Body,
 	Controller,
+	Get,
 	HttpCode,
 	HttpStatus,
+	Inject,
 	Ip,
 	Post,
 	Req,
@@ -22,14 +24,24 @@ import { JwtRefreshGuard } from '../../guards-handlers/guards/jwt-refresh.guard'
 import { JwtRefreshPayload } from 'src/guards-handlers/strategies/jwt-refresh.strategy'
 import { ApiTags } from '@nestjs/swagger'
 import { SWAGGER_AUTH } from 'src/utils/swagger'
+import { MAILER_SERVICE } from 'src/utils/constants/services.constants'
+import { ClientProxy } from '@nestjs/microservices'
 
 @ApiTags('Auth endpoints')
 @Controller('auth')
 export class AuthController {
 	constructor(
 		private readonly commandBus: CommandBus,
-		private readonly config: ConfigService
+		private readonly config: ConfigService,
+		@Inject(MAILER_SERVICE) private readonly mailerClient: ClientProxy
 	) {}
+
+	@Get('hello')
+	public hello() {
+		console.log('lets-go')
+		this.mailerClient.emit('user-created', 'hello-emit')
+		this.mailerClient.send('user-created', 'hello-send')
+	}
 
 	@SWAGGER_AUTH.SwaggerToRegister()
 	@Post('register')
