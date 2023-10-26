@@ -10,8 +10,7 @@ services:
             - DATABASE_URL=postgresql://admin:admin@postgres:5432/users_auth
             - RMQ_HOST=amqp://admin:admin@rabbitmq:5672
             - RMQ_PAYMENTS_QUEUE=payments
-            - REDIS_PASS=admin
-            - REDIS_DB=0
+            - RMQ_MAILER_QUEUE=mailer
             - REDIS_HOST=redis
             - REDIS_PORT=6379
             - PORT=4200
@@ -79,6 +78,8 @@ services:
         container_name: redis-container
         ports:
             - 6379:6379
+        # environment:
+        #     - REDIS_PASSWORD=admin
         volumes:
             - redis-data:/data
 
