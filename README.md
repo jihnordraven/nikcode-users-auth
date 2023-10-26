@@ -38,6 +38,8 @@ $ docker-compose down
 ## Installation
 
 ```bash
+$ yarn db:push
+
 $ yarn install
 ```
 
