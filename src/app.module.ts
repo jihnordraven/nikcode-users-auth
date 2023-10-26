@@ -7,28 +7,35 @@ import { PrismaModule } from '../prisma/prisma.module'
 import { CacheModule } from '@nestjs/cache-manager'
 import { redisStore } from 'cache-manager-redis-yet'
 import { STRATEGIES } from './guards-handlers/strategies'
+import { AppController } from './app.controller'
+import { memoryStore } from 'cache-manager'
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
-		CacheModule.registerAsync({
+		CacheModule.register({
 			isGlobal: true,
-			inject: [ConfigService],
-			useFactory: async (config: ConfigService) => ({
-				store: await redisStore({
-					password: config.getOrThrow<string>('REDIS_PASS'),
-					socket: {
-						host: config.getOrThrow<string>('REDIS_HOST'),
-						port: config.getOrThrow<number>('REDIS_PORT')
-					}
-				})
-			})
+			store: memoryStore
 		}),
+		// CacheModule.registerAsync({
+		// 	isGlobal: true,
+		// 	inject: [ConfigService],
+		// 	useFactory: async (config: ConfigService) => ({
+		// 		store: await redisStore({
+		// 			password: 'admin' /* config.getOrThrow<string>('REDIS_PASS') */,
+		// 			socket: {
+		// 				host: config.getOrThrow<string>('REDIS_HOST'),
+		// 				port: config.getOrThrow<number>('REDIS_PORT')
+		// 			}
+		// 		})
+		// 	})
+		// }),
 		PrismaModule,
 		AuthModule,
 		SessionsModule,
 		UsersModule
 	],
+	controllers: [AppController],
 	providers: [...STRATEGIES]
 })
 export class AppModule {}

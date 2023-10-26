@@ -1,4 +1,4 @@
-FROM node-alpine3.17
+FROM node:latest
 
 WORKDIR /app
 
@@ -14,6 +14,6 @@ RUN npx prisma generate
 
 RUN yarn build
 
-EXPOSE 3800
+EXPOSE 4200
 
-CMD ["yarn", "prod"]
+CMD ["yarn", "start:prod"]

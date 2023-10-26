@@ -32,16 +32,8 @@ import { ClientProxy } from '@nestjs/microservices'
 export class AuthController {
 	constructor(
 		private readonly commandBus: CommandBus,
-		private readonly config: ConfigService,
-		@Inject(MAILER_SERVICE) private readonly mailerClient: ClientProxy
+		private readonly config: ConfigService
 	) {}
-
-	@Get('hello')
-	public hello() {
-		console.log('lets-go')
-		this.mailerClient.emit('user-created', 'hello-emit')
-		this.mailerClient.send('user-created', 'hello-send')
-	}
 
 	@SWAGGER_AUTH.SwaggerToRegister()
 	@Post('register')
