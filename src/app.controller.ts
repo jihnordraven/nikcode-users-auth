@@ -1,8 +1,10 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common'
 import { HelloPageTemplate } from './utils/hello-page.template'
 import { ConfigService } from '@nestjs/config'
+import { ApiTags } from '@nestjs/swagger'
 
-@Controller('Util endpoints')
+@ApiTags('Util endpoints')
+@Controller()
 export class AppController {
 	constructor(private readonly config: ConfigService) {}
 
